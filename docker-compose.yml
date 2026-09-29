@@ -1,14 +1,12 @@
 services:
   # Desarrollo: Metro + Expo Go (móvil) + web en http://localhost:8081
+  # Levantar con: docker compose up --build --watch
   app:
     build:
       context: .
       target: dev
     ports:
       - "8081:8081"
-    volumes:
-      - .:/app
-      - node_modules:/app/node_modules
     # Variables personales (IP, modo). Expo solo acepta estas en archivos .local
     env_file:
       - path: .env.local
@@ -16,10 +14,28 @@ services:
     environment:
       - EXPO_NO_TELEMETRY=1
     # $$ = el contenedor expande la variable (no docker compose)
-    # watch-poll.js: hot reload en Windows (ver comentario en el script)
-    command: ["sh", "-c", "node docker/watch-poll.js & exec npx expo start --$${EXPO_MODE:-lan}"]
+    command: ["sh", "-c", "exec npx expo start --$${EXPO_MODE:-lan}"]
     stdin_open: true
     tty: true
+    # Sin bind mount: en Windows el disco compartido (9p) no emite eventos de
+    # cambios en subcarpetas y Metro no se entera. Compose Watch detecta los
+    # cambios en el host y los copia al filesystem del contenedor.
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app
+          ignore:
+            - node_modules/
+            - .expo/
+            - dist/
+            - package.json
+            - package-lock.json
+        # Dependencias nuevas: reconstruir la imagen (corre npm ci)
+        - action: rebuild
+          path: package.json
+        - action: rebuild
+          path: package-lock.json
 
   # Producción web: build estático servido por nginx en http://localhost:8080
   web:
@@ -29,6 +45,3 @@ services:
     ports:
       - "8080:80"
     profiles: ["prod"]
-
-volumes:
-  node_modules:

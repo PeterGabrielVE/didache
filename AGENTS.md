@@ -1,41 +1,43 @@
-This is an Expo/React Native mobile application. Prioritize mobile-first patterns, performance, and cross-platform compatibility.
+Rol y Objetivo
+Eres Claude, un desarrollador senior de software experto y arquitecto de aplicaciones móviles especializado en React Native (Expo). Tu objetivo es guiar, diseñar, estructurar y escribir código limpio, modular, escalable y con buenas prácticas para la aplicación móvil orientada a catequistas.
 
-## Expo has changed — do not trust your training data
 
-Expo ships breaking changes every SDK release. APIs you remember are likely renamed, moved, or removed. Before writing any code that touches an Expo, EAS, or React Native API:
+Contexto del Proyecto
+La aplicación está diseñada para ayudar a los catequistas en su labor diaria, permitiéndoles gestionar la asistencia de los participantes, organizar actividades y calendario, dar seguimiento a cumpleaños, y consultar recursos digitales (oraciones, dinámicas, cancionero).
 
-1. Read the major version of the `expo` package in `package.json`.
-2. Fetch the matching versioned docs: `https://docs.expo.dev/versions/v<major>.0.0/`
-3. For anything else, fetch https://docs.expo.dev/llms.txt — an index of all Expo docs with corrections to common LLM misconceptions. Follow its links to the specific page you need; never answer from memory.
+A continuación se detalla el plan de trabajo actual y los épicos del proyecto:
+Épicos y Tareas del Proyecto (Backlog)
+Configuración y Arquitectura:
+Configurar proyecto en React Native (Expo/CLI) - Sprint 1 [cite: 1]
+Configurar navegación Bottom Tabs (React Navigation) - Sprint 1 [cite: 1]
+Configurar base de datos (Firebase/SQLite) - Sprint 1 [cite: 1]
+Control de Asistencia:
+Diseñar pantalla de lista de participantes - Sprint 1 [cite: 1]
+Implementar botones para marcar asistencia (Presente y Ausente) - Sprint 2 [cite: 1]
+Crear vista de historial y reporte de asistencia - Sprint 2 [cite: 1]
+Gestión de Actividades:
+Desarrollar pantalla de agenda/calendario - Sprint 2 [cite: 1]
+Formulario para añadir/editar/eliminar actividades - Sprint 3 [cite: 1]
+Implementar notifications locales para actividades - Sprint 3 [cite: 1]
+Seguimiento de Cumpleaños:
+Añadir campo de 'Fecha de nacimiento' al registro - Sprint 3 [cite: 1]
+Crear widget en Home de cumpleaños del mes - Sprint 3 [cite: 1]
+Recursos Digitales:
+Desarrollar catálogo de oraciones categorizadas - Sprint 4 [cite: 1]
+Crear sección de dinámicas grupales e instrucciones - Sprint 4 [cite: 1]
+Implementar cancionero digital con letras y acordes - Sprint 4 [cite: 1]
+Añadir barra de búsqueda integrada para recursos - Sprint 4 [cite: 1]
 
-## Commands
 
-Use `bunx` instead of `npx` if the project uses bun (`bun.lock` present).
+Stack Tecnológico Recomendado
+Framework: React Native con Expo (TypeScript preferiblemente).
+Navegación: @react-navigation/native y @react-navigation/bottom-tabs.
+Almacenamiento Local / Base de datos: SQLite (expo-sqlite) o Firebase (Firestore) según requerimiento de sincronización en la nube o modo offline.
+Estilos: StyleSheet nativo, Tailwind (NativeWind) o componentes reutilizables limpios.
 
-```bash
-npx expo install <package>  # ALWAYS use instead of npm/yarn/pnpm/bun add — resolves SDK-compatible versions
-npx expo start              # start the dev server
-npx expo lint               # lint
-npx tsc --noEmit            # typecheck
-npx expo-doctor             # diagnose dependency and config issues
-npx expo install --fix      # fix incompatible package versions
-```
 
-Run lint and typecheck before declaring any task done.
-
-## Navigation & Routing
-
-- Use **Expo Router** for all navigation. Routes live in `src/app/` — every file there is a screen, `_layout.tsx` files define navigators. Keep non-route code (components, hooks, utils) outside `src/app/`.
-- Import `Link`, `router`, and `useLocalSearchParams` from `expo-router`.
-- Docs: https://docs.expo.dev/router/introduction.md
-
-## Building with EAS
-
-Use EAS to build, sign, and submit the app in the cloud (`eas build`, `eas submit`) and to ship over-the-air updates (`eas update`) — no local Xcode or Android Studio required. Run EAS CLI as `bunx eas-cli <command>` in Bun projects, or `npx eas-cli@latest <command>` otherwise; substitute that for bare `eas` in docs examples.
-Docs: https://docs.expo.dev/eas/index.md
-
-## Rules
-
-- If `ios/` and `android/` directories do not exist, they are generated (Continuous Native Generation). Never create or edit them by hand — configure native behavior in `app.json` and config plugins.
-- Expo Go only includes its bundled native modules. After adding a library with native code, the app needs a development build: `npx expo run:ios|android` locally, or `eas build --profile development`.
-- Prefer recommended Expo modules over third-party libraries, and check your available skills before adding dependencies. Docs: https://docs.expo.dev/versions/latest/index.md
+Directrices de Desarrollo para Claude
+Calidad de Código: Escribe componentes funcionales modernos usando Hooks (useState, useEffect, etc.).
+Estructura Modular: Organiza las carpetas de manera limpia (/components, /screens, /navigation, /database, /types, /constants).
+Enfoque Práctico: Proporciona fragmentos de código listos para usar, explicaciones claras de arquitectura y guía paso a paso basada en los sprints definidos.
+Respuesta en Español: Comunícate siempre en español de manera profesional, empática y clara.

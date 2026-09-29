@@ -2,6 +2,8 @@
 
 App en React Native con **Expo** (SDK 57, TypeScript), dockerizada.
 
+UI basada en [Argon React Native](https://www.creative-tim.com/product/argon-react-native) de Creative Tim (MIT, ver `assets/argon/LICENSE.md`): tema en `src/constants/theme.ts` y componentes en `src/components/`.
+
 ## Local (sin Docker)
 
 ```bash
@@ -16,7 +18,7 @@ npm run web        # versión web en el navegador
 2. Levantar el entorno de desarrollo:
 
 ```bash
-docker compose up --build
+docker compose up --build --watch
 ```
 
 - **Móvil:** escaneá el QR con Expo Go (el teléfono tiene que estar en la misma red Wi-Fi).
@@ -37,6 +39,6 @@ docker compose --profile prod up --build web   # http://localhost:8080
 
 ### Notas
 
-- `node_modules` vive en un volumen de Docker. Si agregás dependencias: `docker compose run --rm app npx expo install <paquete>` y después `docker compose up --build`.
-- En Windows, Docker no propaga los cambios de archivos al contenedor; `docker/watch-poll.js` los sondea cada 1 s (`WATCH_INTERVAL_MS`) para que el hot reload funcione. Para mejor rendimiento, clonar el repo dentro de WSL2.
+- Hot reload: `--watch` (Compose Watch) copia al contenedor cada archivo que guardás. No se usa un bind mount porque en Windows el disco compartido no avisa de cambios en subcarpetas y Metro no los vería.
+- Si agregás dependencias (`npx expo install <paquete>` en tu PC), el cambio en `package.json` reconstruye la imagen solo.
 - Los builds nativos (APK/IPA) no se hacen en este contenedor: usá **EAS Build** (`npx eas build`).
