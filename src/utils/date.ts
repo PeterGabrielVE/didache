@@ -10,6 +10,18 @@ export function today() {
   return toISODate(new Date());
 }
 
+// 'YYYY-MM-DD' -> Date local (new Date('YYYY-MM-DD') la interpretaría en UTC y podría correrse un día)
+export function parseISODate(iso: string) {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
+export function addDays(iso: string, days: number) {
+  const date = parseISODate(iso);
+  date.setDate(date.getDate() + days);
+  return toISODate(date);
+}
+
 // Primer y último día del mes de la fecha dada.
 export function monthRange(date = new Date()) {
   const first = new Date(date.getFullYear(), date.getMonth(), 1);
@@ -18,13 +30,13 @@ export function monthRange(date = new Date()) {
 }
 
 // 'Martes, 29 de septiembre' (solo la primera letra en mayúscula)
-export function formatLongDate(date = new Date()) {
-  const text = date.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' });
+export function formatLongDate(date: Date | string = new Date()) {
+  const value = typeof date === 'string' ? parseISODate(date) : date;
+  const text = value.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' });
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-// 'YYYY-MM-DD' -> '4 oct.' (se arma con componentes locales para no correrse de día por UTC)
+// 'YYYY-MM-DD' -> '4 oct.'
 export function formatShortDate(iso: string) {
-  const [y, m, d] = iso.split('-').map(Number);
-  return new Date(y, m - 1, d).toLocaleDateString('es', { day: 'numeric', month: 'short' });
+  return parseISODate(iso).toLocaleDateString('es', { day: 'numeric', month: 'short' });
 }

@@ -4,7 +4,7 @@ import { Platform } from 'react-native';
 import { Icon, type IoniconName } from '../components';
 import { COLORS } from '../constants/theme';
 import { HomeScreen } from '../screens/HomeScreen';
-import { ParticipantsScreen } from '../screens/ParticipantsScreen';
+import { AttendanceScreen } from '../screens/AttendanceScreen';
 import { AgendaScreen, ResourcesScreen } from '../screens/PlaceholderScreens';
 import { headerOptions } from './headerOptions';
 
@@ -34,10 +34,9 @@ export const RootTabs = createBottomTabNavigator({
       },
     },
     Attendance: {
-      screen: ParticipantsScreen,
+      screen: AttendanceScreen,
       options: {
         title: 'Asistencia',
-        headerTitle: 'Participantes',
         tabBarIcon: tabIcon('people', 'people-outline'),
       },
     },

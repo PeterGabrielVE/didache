@@ -34,6 +34,21 @@ export async function setAttendance(
   );
 }
 
+// Misma marca para varios participantes en una sola transacción (p. ej. "todos presentes").
+export async function setAttendanceBulk(
+  db: SQLiteDatabase,
+  participantIds: number[],
+  date: string,
+  status: AttendanceStatus,
+) {
+  if (participantIds.length === 0) return;
+  await db.withTransactionAsync(async () => {
+    for (const participantId of participantIds) {
+      await setAttendance(db, participantId, date, status);
+    }
+  });
+}
+
 export async function clearAttendance(db: SQLiteDatabase, participantId: number, date: string) {
   await db.runAsync('DELETE FROM attendance WHERE participant_id = ? AND date = ?', participantId, date);
 }
