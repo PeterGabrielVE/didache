@@ -1,6 +1,9 @@
+export { Avatar } from './Avatar';
 export { Badge } from './Badge';
 export { Button, type ButtonProps } from './Button';
 export { Card } from './Card';
+export { EmptyState } from './EmptyState';
+export { FloatingButton } from './FloatingButton';
 export { Icon, type ArgonIconName, type IconProps, type IoniconName } from './Icon';
 export { Input, type InputProps } from './Input';
 export { StatCard } from './StatCard';

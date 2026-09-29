@@ -41,6 +41,7 @@ export function Input({
         style={[
           styles.field,
           !shadowless && SHADOWS.sm,
+          props.multiline && styles.fieldMultiline,
           focused && styles.focused,
           success && styles.success,
           error && styles.error,
@@ -49,7 +50,7 @@ export function Input({
         {icon}
         <TextInput
           placeholderTextColor={COLORS.MUTED}
-          style={[styles.input, style]}
+          style={[styles.input, props.multiline && styles.inputMultiline, style]}
           onFocus={(e) => {
             setFocused(true);
             onFocus?.(e);
@@ -85,6 +86,12 @@ const styles = StyleSheet.create({
     borderColor: COLORS.BORDER,
     backgroundColor: COLORS.WHITE,
   },
+  fieldMultiline: {
+    height: undefined,
+    minHeight: 96,
+    alignItems: 'flex-start',
+    paddingVertical: 10,
+  },
   focused: {
     borderColor: COLORS.PRIMARY,
   },
@@ -99,6 +106,13 @@ const styles = StyleSheet.create({
     height: '100%',
     fontSize: 14,
     color: COLORS.HEADER,
+    // Web: sin el contorno negro del navegador; el foco ya lo marca el borde
+    outlineWidth: 0,
+  },
+  inputMultiline: {
+    height: undefined,
+    minHeight: 76,
+    textAlignVertical: 'top',
   },
   helper: {
     marginTop: 4,
