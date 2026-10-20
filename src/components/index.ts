@@ -5,6 +5,7 @@ export { Avatar } from './Avatar';
 export { Badge } from './Badge';
 export { Button, type ButtonProps } from './Button';
 export { Card } from './Card';
+export { DateField } from './DateField';
 export { DateNavigator } from './DateNavigator';
 export { EmptyState } from './EmptyState';
 export { FloatingButton } from './FloatingButton';

@@ -7,6 +7,7 @@ import {
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { COLORS } from '../constants/theme';
+import { ActivityFormScreen } from '../screens/ActivityFormScreen';
 import { AttendanceReportScreen } from '../screens/AttendanceReportScreen';
 import { ParticipantFormScreen } from '../screens/ParticipantFormScreen';
 import { ParticipantHistoryScreen } from '../screens/ParticipantHistoryScreen';
@@ -26,6 +27,13 @@ const RootStack = createNativeStackNavigator({
       // En la config estática route.params no se infiere: se tipa a mano
       options: ({ route }: { route: { params?: { participantId?: number } } }) => ({
         title: route.params?.participantId ? 'Editar participante' : 'Nuevo participante',
+        presentation: 'modal',
+      }),
+    },
+    ActivityForm: {
+      screen: ActivityFormScreen,
+      options: ({ route }: { route: { params?: { activityId?: number } } }) => ({
+        title: route.params?.activityId ? 'Editar actividad' : 'Nueva actividad',
         presentation: 'modal',
       }),
     },

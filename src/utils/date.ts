@@ -30,10 +30,15 @@ export function monthRange(date: Date | string = new Date()) {
   return { from: toISODate(first), to: toISODate(last) };
 }
 
-// 'Martes, 29 de septiembre' (solo la primera letra en mayúscula)
-export function formatLongDate(date: Date | string = new Date()) {
+// 'Martes, 29 de septiembre' (solo la primera letra en mayúscula); con withYear agrega ' de 2026'
+export function formatLongDate(date: Date | string = new Date(), withYear = false) {
   const value = typeof date === 'string' ? parseISODate(date) : date;
-  const text = value.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' });
+  const text = value.toLocaleDateString('es', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    ...(withYear && { year: 'numeric' }),
+  });
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
@@ -77,4 +82,15 @@ export function calendarWeeks(month: string) {
 export function formatTimeRange(start: string | null, end: string | null) {
   if (!start) return null;
   return end ? `${start} – ${end}` : start;
+}
+
+// Máscara para escribir horas: '1030' -> '10:30'. Solo dígitos, como máximo 4.
+export function maskTime(text: string) {
+  const digits = text.replace(/\D/g, '').slice(0, 4);
+  return digits.length > 2 ? `${digits.slice(0, 2)}:${digits.slice(2)}` : digits;
+}
+
+// 'HH:mm' de 00:00 a 23:59
+export function isValidTime(text: string) {
+  return /^([01]\d|2[0-3]):[0-5]\d$/.test(text);
 }

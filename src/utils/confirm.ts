@@ -1,0 +1,31 @@
+import { Alert, Platform } from 'react-native';
+
+type Options = {
+  title: string;
+  message?: string;
+  confirmLabel: string;
+  destructive?: boolean;
+};
+
+// Diálogo de confirmación. En web, Alert de react-native-web no muestra botones: se usa window.confirm.
+export function confirm({ title, message, confirmLabel, destructive }: Options) {
+  if (Platform.OS === 'web') {
+    return Promise.resolve(window.confirm(message ? `${title}\n\n${message}` : title));
+  }
+  return new Promise<boolean>((resolve) => {
+    Alert.alert(
+      title,
+      message,
+      [
+        { text: 'Cancelar', style: 'cancel', onPress: () => resolve(false) },
+        {
+          text: confirmLabel,
+          style: destructive ? 'destructive' : 'default',
+          onPress: () => resolve(true),
+        },
+      ],
+      // Android: tocar fuera del diálogo equivale a cancelar
+      { cancelable: true, onDismiss: () => resolve(false) },
+    );
+  });
+}

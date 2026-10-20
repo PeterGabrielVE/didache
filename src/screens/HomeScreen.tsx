@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { ActivityCard, Card, Icon, StatCard, Text } from '../components';
@@ -6,6 +7,7 @@ import { useDashboardStats } from '../hooks/useDashboardStats';
 import { formatLongDate } from '../utils/date';
 
 export function HomeScreen() {
+  const navigation = useNavigation();
   const { stats, activities } = useDashboardStats();
   const todayLabel = formatLongDate();
 
@@ -45,7 +47,13 @@ export function HomeScreen() {
           </Text>
         </Card>
       ) : (
-        activities.map((activity) => <ActivityCard key={activity.id} activity={activity} />)
+        activities.map((activity) => (
+          <ActivityCard
+            key={activity.id}
+            activity={activity}
+            onPress={() => navigation.navigate('ActivityForm', { activityId: activity.id })}
+          />
+        ))
       )}
     </ScrollView>
   );
