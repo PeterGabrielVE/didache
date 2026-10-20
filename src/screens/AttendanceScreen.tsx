@@ -99,9 +99,7 @@ export function AttendanceScreen() {
                   icon={<Icon name="checkmark-done" size={14} color={COLORS.WHITE} />}
                   onPress={markRemainingPresent}
                 >
-                  {summary.unmarked === participants.length
-                    ? 'Todos presentes'
-                    : 'Resto presentes'}
+                  {summary.unmarked === participants.length ? 'Todos presentes' : 'Resto presentes'}
                 </Button>
               ) : null}
 
@@ -132,8 +130,15 @@ export function AttendanceScreen() {
             <EmptyState
               icon={{ name: 'people-outline' }}
               title="Todavía no hay participantes"
-              description="Agregá a los chicos de tu grupo para empezar a tomar asistencia."
-              action={<Button onPress={() => openForm()}>Agregar participante</Button>}
+              description="Agregá a los chicos de tu grupo para empezar a tomar asistencia, o importalos desde la planilla de inscripción."
+              action={
+                <View style={styles.emptyActions}>
+                  <Button onPress={() => openForm()}>Agregar participante</Button>
+                  <Button transparent onPress={() => navigation.navigate('ImportParticipants')}>
+                    Importar planilla
+                  </Button>
+                </View>
+              }
             />
           )
         }
@@ -180,7 +185,10 @@ function ParticipantRow({
         accessibilityLabel={`Editar a ${name}`}
         style={({ pressed }) => [styles.rowMain, pressed && styles.pressed]}
       >
-        <Avatar label={initials(participant.firstName, participant.lastName)} seed={participant.id} />
+        <Avatar
+          label={initials(participant.firstName, participant.lastName)}
+          seed={participant.id}
+        />
         <View style={styles.rowText}>
           <Text variant="body" bold color={COLORS.HEADING} numberOfLines={1}>
             {name}
@@ -231,6 +239,9 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
+  },
+  emptyActions: {
+    gap: 4,
   },
   markAll: {
     alignSelf: 'flex-start',

@@ -9,10 +9,26 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { COLORS } from '../constants/theme';
 import { ActivityFormScreen } from '../screens/ActivityFormScreen';
 import { AttendanceReportScreen } from '../screens/AttendanceReportScreen';
+import { ImportItineraryScreen } from '../screens/ImportItineraryScreen';
+import { ImportParticipantsScreen } from '../screens/ImportParticipantsScreen';
 import { ParticipantFormScreen } from '../screens/ParticipantFormScreen';
 import { ParticipantHistoryScreen } from '../screens/ParticipantHistoryScreen';
+import { DynamicFormScreen } from '../screens/resources/DynamicFormScreen';
+import { DynamicScreen } from '../screens/resources/DynamicScreen';
+import { PrayerFormScreen } from '../screens/resources/PrayerFormScreen';
+import { PrayerScreen } from '../screens/resources/PrayerScreen';
+import { SongFormScreen } from '../screens/resources/SongFormScreen';
+import { SongScreen } from '../screens/resources/SongScreen';
 import { headerOptions } from './headerOptions';
 import { RootTabs } from './RootTabs';
+
+// Opciones de un formulario modal: título según haya id (edición) o no (alta)
+function formOptions(idParam: string, editTitle: string, newTitle: string) {
+  return ({ route }: { route: { params?: object } }) => ({
+    title: (route.params as Record<string, unknown> | undefined)?.[idParam] ? editTitle : newTitle,
+    presentation: 'modal' as const,
+  });
+}
 
 // Stack raíz: las tabs y, encima, las pantallas que se abren desde ellas (formularios, detalles).
 const RootStack = createNativeStackNavigator({
@@ -37,6 +53,17 @@ const RootStack = createNativeStackNavigator({
         presentation: 'modal',
       }),
     },
+    ImportParticipants: {
+      screen: ImportParticipantsScreen,
+      options: ({ route }: { route: { params?: { mode?: string } } }) => ({
+        title: route.params?.mode === 'pick' ? 'Elegir de la planilla' : 'Importar planilla',
+        presentation: 'modal' as const,
+      }),
+    },
+    ImportItinerary: {
+      screen: ImportItineraryScreen,
+      options: { title: 'Importar itinerario', presentation: 'modal' },
+    },
     AttendanceReport: {
       screen: AttendanceReportScreen,
       options: { title: 'Reporte de asistencia' },
@@ -44,6 +71,30 @@ const RootStack = createNativeStackNavigator({
     ParticipantHistory: {
       screen: ParticipantHistoryScreen,
       options: { title: 'Historial' },
+    },
+    Prayer: {
+      screen: PrayerScreen,
+      options: { title: 'Oración' },
+    },
+    PrayerForm: {
+      screen: PrayerFormScreen,
+      options: formOptions('prayerId', 'Editar oración', 'Nueva oración'),
+    },
+    Dynamic: {
+      screen: DynamicScreen,
+      options: { title: 'Dinámica' },
+    },
+    DynamicForm: {
+      screen: DynamicFormScreen,
+      options: formOptions('dynamicId', 'Editar dinámica', 'Nueva dinámica'),
+    },
+    Song: {
+      screen: SongScreen,
+      options: { title: 'Canción' },
+    },
+    SongForm: {
+      screen: SongFormScreen,
+      options: formOptions('songId', 'Editar canción', 'Nueva canción'),
     },
   },
 });

@@ -38,3 +38,13 @@ export function notify(title: string, message?: string) {
   }
   Alert.alert(title, message);
 }
+
+// Pide confirmación para borrar un recurso. Devuelve true si el usuario aceptó.
+export function confirmDelete(kind: string, title: string) {
+  return confirm({
+    title: `¿Eliminar ${kind}?`,
+    message: `"${title.trim() || 'Sin título'}" se va a borrar definitivamente.`,
+    confirmLabel: 'Eliminar',
+    destructive: true,
+  });
+}

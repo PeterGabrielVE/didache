@@ -8,6 +8,7 @@ import { activitiesRepo, useDatabase } from '../database';
 import {
   REMINDER_OPTIONS,
   cancelActivityReminder,
+  remindersUnavailableReason,
   syncActivityReminder,
   type ReminderResult,
 } from '../services/reminders';
@@ -128,11 +129,10 @@ export function ActivityFormScreen({ route }: Props) {
   };
 
   const reminderHelp =
-    Platform.OS === 'web'
-      ? 'Los recordatorios llegan solo en la app del teléfono.'
-      : reminderMinutes !== null && !startTime
-        ? 'Sin hora de inicio, el aviso se calcula desde las 9:00.'
-        : null;
+    remindersUnavailableReason() ??
+    (reminderMinutes !== null && !startTime
+      ? 'Sin hora de inicio, el aviso se calcula desde las 9:00.'
+      : null);
 
   return (
     <KeyboardAvoidingView

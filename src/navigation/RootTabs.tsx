@@ -1,12 +1,12 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Platform } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import { HeaderButton, Icon, type IoniconName } from '../components';
 import { COLORS } from '../constants/theme';
 import { HomeScreen } from '../screens/HomeScreen';
 import { AttendanceScreen } from '../screens/AttendanceScreen';
 import { AgendaScreen } from '../screens/AgendaScreen';
-import { ResourcesScreen } from '../screens/PlaceholderScreens';
+import { ResourcesScreen } from '../screens/resources/ResourcesScreen';
 import { headerOptions } from './headerOptions';
 
 // Ícono relleno cuando la tab está activa, contorno cuando no
@@ -40,20 +40,34 @@ export const RootTabs = createBottomTabNavigator({
         title: 'Asistencia',
         tabBarIcon: tabIcon('people', 'people-outline'),
         headerRight: () => (
-          <HeaderButton
-            icon="stats-chart-outline"
-            label="Ver reporte de asistencia"
-            onPress={() => navigation.navigate('AttendanceReport')}
-          />
+          <View style={{ flexDirection: 'row' }}>
+            <HeaderButton
+              icon="document-attach-outline"
+              label="Importar planilla de inscripción"
+              onPress={() => navigation.navigate('ImportParticipants')}
+            />
+            <HeaderButton
+              icon="stats-chart-outline"
+              label="Ver reporte de asistencia"
+              onPress={() => navigation.navigate('AttendanceReport')}
+            />
+          </View>
         ),
       }),
     },
     Agenda: {
       screen: AgendaScreen,
-      options: {
+      options: ({ navigation }) => ({
         title: 'Agenda',
         tabBarIcon: tabIcon('calendar', 'calendar-outline'),
-      },
+        headerRight: () => (
+          <HeaderButton
+            icon="document-attach-outline"
+            label="Importar itinerario"
+            onPress={() => navigation.navigate('ImportItinerary')}
+          />
+        ),
+      }),
     },
     Resources: {
       screen: ResourcesScreen,

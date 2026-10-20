@@ -22,6 +22,12 @@ export function addDays(iso: string, days: number) {
   return toISODate(date);
 }
 
+// Días de a hasta b ('YYYY-MM-DD'); negativo si b es anterior
+export function diffDays(a: string, b: string) {
+  // Math.round: los cambios de horario de verano hacen que un día no dure siempre 24 h
+  return Math.round((parseISODate(b).getTime() - parseISODate(a).getTime()) / 86_400_000);
+}
+
 // Primer y último día del mes de la fecha dada.
 export function monthRange(date: Date | string = new Date()) {
   if (typeof date === 'string') date = parseISODate(date);
@@ -58,7 +64,6 @@ export function formatMonth(iso: string) {
   const text = parseISODate(iso).toLocaleDateString('es', { month: 'long', year: 'numeric' });
   return text.charAt(0).toUpperCase() + text.slice(1).replace(' de ', ' ');
 }
-
 
 // Semanas del mes para una grilla de calendario que empieza el lunes.
 // Los huecos antes del día 1 y después del último día son null.
@@ -120,4 +125,26 @@ export function formatDisplayDate(iso: string) {
 // Edad que cumple (o cumplió) en el año de `on`
 export function ageTurning(birthDate: string, on = today()) {
   return Number(on.slice(0, 4)) - Number(birthDate.slice(0, 4));
+}
+
+// Fecha escrita de cualquiera de estas formas -> 'YYYY-MM-DD' (o null si no es una fecha real):
+// 2014-03-15 · 15/03/2014 · 15-3-2014 · 15.03.14 · 15/03/2014 10:30:00 (Google Forms)
+export function parseFlexibleDate(text: string) {
+  const value = text.trim().split(/[ T]/)[0];
+  let y: number;
+  let m: number;
+  let d: number;
+  let match = /^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/.exec(value);
+  if (match) {
+    [y, m, d] = [Number(match[1]), Number(match[2]), Number(match[3])];
+  } else {
+    match = /^(\d{1,2})[-/.](\d{1,2})[-/.](\d{2}|\d{4})$/.exec(value);
+    if (!match) return null;
+    [d, m, y] = [Number(match[1]), Number(match[2]), Number(match[3])];
+    // Año de dos cifras: '14' -> 2014, '95' -> 1995
+    if (y < 100) y += y <= new Date().getFullYear() % 100 ? 2000 : 1900;
+  }
+  const date = new Date(y, m - 1, d);
+  if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d) return null;
+  return toISODate(date);
 }

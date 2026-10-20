@@ -98,3 +98,15 @@ export async function setNotificationId(
 ) {
   await db.runAsync('UPDATE activities SET notification_id = ? WHERE id = ?', notificationId, id);
 }
+
+// Alta de varias actividades en una sola transacción (importación de itinerarios)
+export async function createActivities(db: SQLiteDatabase, list: NewActivity[]) {
+  await db.withTransactionAsync(async () => {
+    for (const data of list) await createActivity(db, data);
+  });
+}
+
+export async function getAllActivities(db: SQLiteDatabase) {
+  const rows = await db.getAllAsync<ActivityRow>('SELECT * FROM activities ORDER BY date');
+  return rows.map(toActivity);
+}

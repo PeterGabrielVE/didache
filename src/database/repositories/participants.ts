@@ -57,6 +57,13 @@ export async function createParticipant(db: SQLiteDatabase, data: NewParticipant
   return result.lastInsertRowId;
 }
 
+// Alta de varios participantes en una sola transacción (importación de planillas)
+export async function createParticipants(db: SQLiteDatabase, list: NewParticipant[]) {
+  await db.withTransactionAsync(async () => {
+    for (const data of list) await createParticipant(db, data);
+  });
+}
+
 export async function updateParticipant(
   db: SQLiteDatabase,
   id: number,

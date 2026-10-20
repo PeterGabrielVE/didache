@@ -1,8 +1,15 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 
+import { DYNAMICS } from '../data/dynamics';
+import { PRAYERS } from '../data/prayers';
+
+// SQL a ejecutar, o una función cuando hace falta insertar datos desde JS
+type Migration = string | ((db: SQLiteDatabase) => Promise<void>);
+
 // Cada migración lleva la base de la versión i a la i+1.
 // Para cambiar el esquema, agregá una nueva al final; nunca edites una ya publicada.
-const MIGRATIONS: string[] = [
+// (Editar src/data no cambia bases ya creadas: solo afecta instalaciones nuevas.)
+const MIGRATIONS: Migration[] = [
   // v1: esquema inicial
   `
   CREATE TABLE participants (
@@ -46,6 +53,67 @@ const MIGRATIONS: string[] = [
   ALTER TABLE activities ADD COLUMN reminder_minutes INTEGER;
   ALTER TABLE activities ADD COLUMN notification_id TEXT;
   `,
+  // v4: cancionero propio del catequista (letra con acordes entre corchetes)
+  `
+  CREATE TABLE songs (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    title       TEXT NOT NULL,
+    author      TEXT,
+    song_key    TEXT,
+    lyrics      TEXT NOT NULL,
+    created_at  TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+  `,
+  // v5: oraciones y dinámicas editables, precargadas con el contenido de src/data.
+  // materials y steps se guardan como arreglos JSON.
+  async (db) => {
+    await db.execAsync(`
+      CREATE TABLE prayers (
+        id          INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+        title       TEXT NOT NULL,
+        category    TEXT NOT NULL,
+        text        TEXT NOT NULL,
+        created_at  TEXT NOT NULL DEFAULT (datetime('now'))
+      );
+      CREATE TABLE dynamics (
+        id          INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+        title       TEXT NOT NULL,
+        category    TEXT NOT NULL,
+        summary     TEXT NOT NULL,
+        objective   TEXT NOT NULL,
+        duration    TEXT NOT NULL,
+        group_size  TEXT NOT NULL,
+        materials   TEXT NOT NULL,
+        steps       TEXT NOT NULL,
+        reflection  TEXT NOT NULL,
+        created_at  TEXT NOT NULL DEFAULT (datetime('now'))
+      );
+    `);
+    for (const p of PRAYERS) {
+      await db.runAsync(
+        'INSERT INTO prayers (title, category, text) VALUES (?, ?, ?)',
+        p.title,
+        p.category,
+        p.text,
+      );
+    }
+    for (const d of DYNAMICS) {
+      await db.runAsync(
+        `INSERT INTO dynamics
+           (title, category, summary, objective, duration, group_size, materials, steps, reflection)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        d.title,
+        d.category,
+        d.summary,
+        d.objective,
+        d.duration,
+        d.groupSize,
+        JSON.stringify(d.materials),
+        JSON.stringify(d.steps),
+        d.reflection,
+      );
+    }
+  },
 ];
 
 export const DATABASE_VERSION = MIGRATIONS.length;
@@ -64,7 +132,9 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
 
   for (let version = currentVersion; version < DATABASE_VERSION; version++) {
     await db.withTransactionAsync(async () => {
-      await db.execAsync(MIGRATIONS[version]);
+      const migration = MIGRATIONS[version];
+      if (typeof migration === 'string') await db.execAsync(migration);
+      else await migration(db);
       await db.execAsync(`PRAGMA user_version = ${version + 1}`);
     });
   }

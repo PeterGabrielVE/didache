@@ -2,12 +2,14 @@ import { StackActions, useNavigation, type StaticScreenProps } from '@react-navi
 import { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-native';
 
-import { Button, Card, Input, Text } from '../components';
+import { Button, Card, Icon, Input, Text } from '../components';
 import { COLORS, SIZES } from '../constants/theme';
 import { participantsRepo, useDatabase } from '../database';
 import { formatDisplayDate, maskDate, parseDisplayDate, today } from '../utils/date';
+import type { ParticipantDraft } from '../utils/registration';
 
-type Props = StaticScreenProps<{ participantId?: number } | undefined>;
+// prefill: datos elegidos en una planilla de inscripción (ImportParticipants en modo 'pick')
+type Props = StaticScreenProps<{ participantId?: number; prefill?: ParticipantDraft } | undefined>;
 
 type Errors = Partial<Record<'firstName' | 'lastName' | 'birthDate', string>>;
 
@@ -38,6 +40,18 @@ export function ParticipantFormScreen({ route }: Props) {
       setBirthDate(p.birthDate ? formatDisplayDate(p.birthDate) : '');
     });
   }, [db, participantId]);
+
+  // Al volver de la planilla con una fila elegida, se completan los campos para revisarlos
+  const prefill = route.params?.prefill;
+  useEffect(() => {
+    if (!prefill) return;
+    setFirstName(prefill.firstName);
+    setLastName(prefill.lastName);
+    setPhone(prefill.phone ?? '');
+    setNotes(prefill.notes ?? '');
+    setBirthDate(prefill.birthDate ? formatDisplayDate(prefill.birthDate) : '');
+    setErrors({});
+  }, [prefill]);
 
   const validate = () => {
     const next: Errors = {};
@@ -82,6 +96,15 @@ export function ParticipantFormScreen({ route }: Props) {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+        {!participantId ? (
+          <Button
+            transparent
+            icon={<Icon name="document-attach-outline" size={14} color={COLORS.PRIMARY} />}
+            onPress={() => navigation.navigate('ImportParticipants', { mode: 'pick' })}
+          >
+            {prefill ? 'Elegir otra fila de la planilla' : 'Completar desde planilla'}
+          </Button>
+        ) : null}
         <Card style={styles.card}>
           <Input
             label="Nombre *"

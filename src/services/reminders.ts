@@ -1,4 +1,5 @@
 import * as Notifications from './expoNotifications';
+import { isRunningInExpoGo } from 'expo';
 import type { SQLiteDatabase } from 'expo-sqlite';
 import { Platform } from 'react-native';
 
@@ -6,8 +7,21 @@ import { activitiesRepo } from '../database';
 import type { Activity } from '../types/models';
 import { formatTimeRange, parseISODate } from '../utils/date';
 
-// En web expo-notifications no puede programar notificaciones locales
-const SUPPORTED = Platform.OS !== 'web';
+// Web: expo-notifications no programa notificaciones locales.
+// Expo Go en Android: el módulo de notificaciones viene sin inicializar (falla al crear
+// el canal con NullPointerException); funcionan en un build instalable (APK / development build).
+const UNAVAILABLE_REASON =
+  Platform.OS === 'web'
+    ? 'Los recordatorios llegan solo en la app del teléfono.'
+    : Platform.OS === 'android' && isRunningInExpoGo()
+      ? 'Los recordatorios no funcionan en Expo Go para Android; sí en la app instalada.'
+      : null;
+const SUPPORTED = UNAVAILABLE_REASON === null;
+
+// Por qué no se pueden programar avisos en este entorno (null = sí se puede)
+export function remindersUnavailableReason() {
+  return UNAVAILABLE_REASON;
+}
 const CHANNEL_ID = 'activities';
 // Hora que se toma como inicio de las actividades sin hora
 const DEFAULT_HOUR = 9;
@@ -35,7 +49,7 @@ export function setupNotifications() {
     Notifications.setNotificationChannelAsync(CHANNEL_ID, {
       name: 'Actividades',
       importance: Notifications.AndroidImportance.HIGH,
-    });
+    }).catch((error) => console.warn('No se pudo crear el canal de notificaciones', error));
   }
 }
 
