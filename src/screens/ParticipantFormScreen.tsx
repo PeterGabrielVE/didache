@@ -1,4 +1,4 @@
-import { useNavigation, type StaticScreenProps } from '@react-navigation/native';
+import { StackActions, useNavigation, type StaticScreenProps } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-native';
 
@@ -124,6 +124,15 @@ export function ParticipantFormScreen({ route }: Props) {
         <Button transparent color="default" onPress={() => navigation.goBack()}>
           Cancelar
         </Button>
+        {participantId ? (
+          <Button
+            transparent
+            // Si se llegó desde el historial vuelve a él; si no, reemplaza el formulario
+            onPress={() => navigation.dispatch(StackActions.popTo('ParticipantHistory', { participantId }))}
+          >
+            Ver historial de asistencia
+          </Button>
+        ) : null}
       </ScrollView>
     </KeyboardAvoidingView>
   );

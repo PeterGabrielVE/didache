@@ -7,7 +7,9 @@ import {
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { COLORS } from '../constants/theme';
+import { AttendanceReportScreen } from '../screens/AttendanceReportScreen';
 import { ParticipantFormScreen } from '../screens/ParticipantFormScreen';
+import { ParticipantHistoryScreen } from '../screens/ParticipantHistoryScreen';
 import { headerOptions } from './headerOptions';
 import { RootTabs } from './RootTabs';
 
@@ -26,6 +28,14 @@ const RootStack = createNativeStackNavigator({
         title: route.params?.participantId ? 'Editar participante' : 'Nuevo participante',
         presentation: 'modal',
       }),
+    },
+    AttendanceReport: {
+      screen: AttendanceReportScreen,
+      options: { title: 'Reporte de asistencia' },
+    },
+    ParticipantHistory: {
+      screen: ParticipantHistoryScreen,
+      options: { title: 'Historial' },
     },
   },
 });

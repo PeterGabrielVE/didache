@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { COLORS, SHADOWS, SIZES } from '../constants/theme';
 import { addDays, formatLongDate, today } from '../utils/date';
-import { Icon, type IoniconName } from './Icon';
+import { ArrowButton } from './ArrowButton';
 import { Text } from './Text';
 
 type Props = {
@@ -50,32 +50,6 @@ export function DateNavigator({ date, onChange, maxDate = today() }: Props) {
   );
 }
 
-function ArrowButton({
-  icon,
-  label,
-  onPress,
-  disabled,
-}: {
-  icon: IoniconName;
-  label: string;
-  onPress: () => void;
-  disabled?: boolean;
-}) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      accessibilityState={{ disabled }}
-      disabled={disabled}
-      onPress={onPress}
-      hitSlop={8}
-      style={({ pressed }) => [styles.arrow, pressed && styles.pressed, disabled && styles.disabled]}
-    >
-      <Icon name={icon} size={20} color={COLORS.PRIMARY} />
-    </Pressable>
-  );
-}
-
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
@@ -90,19 +64,5 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     gap: 2,
-  },
-  arrow: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: `${COLORS.PRIMARY}14`,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pressed: {
-    opacity: 0.7,
-  },
-  disabled: {
-    opacity: 0.3,
   },
 });

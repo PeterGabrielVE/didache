@@ -90,3 +90,24 @@ export async function getAttendanceSummary(db: SQLiteDatabase, from: string, to:
     absent: row.absent,
   }));
 }
+
+export type SessionSummary = {
+  date: string;
+  present: number;
+  absent: number;
+};
+
+// Un "encuentro" es un día con al menos una marca. Más recientes primero.
+export async function getSessionSummaries(db: SQLiteDatabase, from: string, to: string) {
+  return db.getAllAsync<SessionSummary>(
+    `SELECT date,
+            SUM(status = 'present') AS present,
+            SUM(status = 'absent')  AS absent
+     FROM attendance
+     WHERE date BETWEEN ? AND ?
+     GROUP BY date
+     ORDER BY date DESC`,
+    from,
+    to,
+  );
+}

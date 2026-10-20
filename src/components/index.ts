@@ -1,3 +1,4 @@
+export { ArrowButton } from './ArrowButton';
 export { AttendanceToggle } from './AttendanceToggle';
 export { Avatar } from './Avatar';
 export { Badge } from './Badge';
@@ -6,8 +7,12 @@ export { Card } from './Card';
 export { DateNavigator } from './DateNavigator';
 export { EmptyState } from './EmptyState';
 export { FloatingButton } from './FloatingButton';
+export { HeaderButton } from './HeaderButton';
 export { Icon, type ArgonIconName, type IconProps, type IoniconName } from './Icon';
 export { Input, type InputProps } from './Input';
+export { MonthNavigator } from './MonthNavigator';
+export { ProgressBar } from './ProgressBar';
+export { SegmentedControl } from './SegmentedControl';
 export { StatCard } from './StatCard';
 export { Switch } from './Switch';
 export { Text, type TextProps } from './Text';

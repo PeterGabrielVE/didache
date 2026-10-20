@@ -23,7 +23,8 @@ export function addDays(iso: string, days: number) {
 }
 
 // Primer y último día del mes de la fecha dada.
-export function monthRange(date = new Date()) {
+export function monthRange(date: Date | string = new Date()) {
+  if (typeof date === 'string') date = parseISODate(date);
   const first = new Date(date.getFullYear(), date.getMonth(), 1);
   const last = new Date(date.getFullYear(), date.getMonth() + 1, 0);
   return { from: toISODate(first), to: toISODate(last) };
@@ -40,3 +41,16 @@ export function formatLongDate(date: Date | string = new Date()) {
 export function formatShortDate(iso: string) {
   return parseISODate(iso).toLocaleDateString('es', { day: 'numeric', month: 'short' });
 }
+
+// Primer día del mes, desplazado n meses: addMonths('2026-10-19', -1) -> '2026-09-01'
+export function addMonths(iso: string, months: number) {
+  const date = parseISODate(iso);
+  return toISODate(new Date(date.getFullYear(), date.getMonth() + months, 1));
+}
+
+// 'YYYY-MM-DD' -> 'Octubre 2026'
+export function formatMonth(iso: string) {
+  const text = parseISODate(iso).toLocaleDateString('es', { month: 'long', year: 'numeric' });
+  return text.charAt(0).toUpperCase() + text.slice(1).replace(' de ', ' ');
+}
+

@@ -1,7 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Platform } from 'react-native';
 
-import { Icon, type IoniconName } from '../components';
+import { HeaderButton, Icon, type IoniconName } from '../components';
 import { COLORS } from '../constants/theme';
 import { HomeScreen } from '../screens/HomeScreen';
 import { AttendanceScreen } from '../screens/AttendanceScreen';
@@ -35,10 +35,17 @@ export const RootTabs = createBottomTabNavigator({
     },
     Attendance: {
       screen: AttendanceScreen,
-      options: {
+      options: ({ navigation }) => ({
         title: 'Asistencia',
         tabBarIcon: tabIcon('people', 'people-outline'),
-      },
+        headerRight: () => (
+          <HeaderButton
+            icon="stats-chart-outline"
+            label="Ver reporte de asistencia"
+            onPress={() => navigation.navigate('AttendanceReport')}
+          />
+        ),
+      }),
     },
     Agenda: {
       screen: AgendaScreen,
