@@ -36,6 +36,16 @@ const MIGRATIONS: string[] = [
   );
   CREATE INDEX idx_activities_date ON activities(date);
   `,
+  // v2: fecha de nacimiento para el seguimiento de cumpleaños
+  `
+  ALTER TABLE participants ADD COLUMN birth_date TEXT;
+  `,
+  // v3: recordatorio de actividades. reminder_minutes = minutos antes del inicio
+  // (NULL = sin recordatorio); notification_id = notificación programada en el dispositivo
+  `
+  ALTER TABLE activities ADD COLUMN reminder_minutes INTEGER;
+  ALTER TABLE activities ADD COLUMN notification_id TEXT;
+  `,
 ];
 
 export const DATABASE_VERSION = MIGRATIONS.length;

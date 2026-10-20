@@ -2,10 +2,16 @@ import { useNavigation, type StaticScreenProps } from '@react-navigation/native'
 import { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
-import { Button, Card, DateField, Icon, Input, Text } from '../components';
+import { Button, Card, DateField, Icon, Input, OptionChips, Text } from '../components';
 import { COLORS, SIZES } from '../constants/theme';
 import { activitiesRepo, useDatabase } from '../database';
-import { confirm } from '../utils/confirm';
+import {
+  REMINDER_OPTIONS,
+  cancelActivityReminder,
+  syncActivityReminder,
+  type ReminderResult,
+} from '../services/reminders';
+import { confirm, notify } from '../utils/dialogs';
 import { isValidTime, maskTime, today } from '../utils/date';
 
 // Sin activityId = alta; `date` propone el día (p. ej. el seleccionado en la agenda)
@@ -24,6 +30,7 @@ export function ActivityFormScreen({ route }: Props) {
   const [endTime, setEndTime] = useState('');
   const [location, setLocation] = useState('');
   const [description, setDescription] = useState('');
+  const [reminderMinutes, setReminderMinutes] = useState<number | null>(null);
   const [errors, setErrors] = useState<Errors>({});
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -38,6 +45,7 @@ export function ActivityFormScreen({ route }: Props) {
       setEndTime(a.endTime ?? '');
       setLocation(a.location ?? '');
       setDescription(a.description ?? '');
+      setReminderMinutes(a.reminderMinutes);
     });
   }, [db, activityId]);
 
@@ -66,17 +74,36 @@ export function ActivityFormScreen({ route }: Props) {
       endTime: endTime || null,
       location: location.trim() || null,
       description: description.trim() || null,
+      reminderMinutes,
     };
+    let id: number;
     try {
       if (activityId) {
         await activitiesRepo.updateActivity(db, activityId, data);
+        id = activityId;
       } else {
-        await activitiesRepo.createActivity(db, data);
+        id = await activitiesRepo.createActivity(db, data);
       }
-      navigation.goBack();
     } catch {
       setSaveError('No se pudo guardar. Intentá de nuevo.');
       setSaving(false);
+      return;
+    }
+    // La actividad ya está guardada: un problema con el aviso no debe impedir cerrar el formulario
+    let reminder: ReminderResult;
+    try {
+      reminder = await syncActivityReminder(db, id);
+    } catch {
+      reminder = 'none';
+    }
+    navigation.goBack();
+    if (reminder === 'denied') {
+      notify(
+        'Actividad guardada sin aviso',
+        'Para recibir recordatorios, permití las notificaciones de la app en los ajustes del teléfono.',
+      );
+    } else if (reminder === 'past') {
+      notify('Actividad guardada sin aviso', 'El momento del recordatorio ya pasó.');
     }
   };
 
@@ -91,6 +118,7 @@ export function ActivityFormScreen({ route }: Props) {
     if (!ok) return;
     setSaving(true);
     try {
+      await cancelActivityReminder(db, activityId).catch(() => {});
       await activitiesRepo.deleteActivity(db, activityId);
       navigation.goBack();
     } catch {
@@ -98,6 +126,13 @@ export function ActivityFormScreen({ route }: Props) {
       setSaving(false);
     }
   };
+
+  const reminderHelp =
+    Platform.OS === 'web'
+      ? 'Los recordatorios llegan solo en la app del teléfono.'
+      : reminderMinutes !== null && !startTime
+        ? 'Sin hora de inicio, el aviso se calcula desde las 9:00.'
+        : null;
 
   return (
     <KeyboardAvoidingView
@@ -161,6 +196,21 @@ export function ActivityFormScreen({ route }: Props) {
             multiline
             shadowless
           />
+          <View style={styles.field}>
+            <Text variant="small" bold>
+              Recordatorio
+            </Text>
+            <OptionChips<number | null>
+              options={REMINDER_OPTIONS}
+              value={reminderMinutes}
+              onChange={setReminderMinutes}
+            />
+            {reminderHelp ? (
+              <Text variant="caption" muted>
+                {reminderHelp}
+              </Text>
+            ) : null}
+          </View>
         </Card>
 
         {saveError ? (
@@ -210,5 +260,8 @@ const styles = StyleSheet.create({
   },
   flex: {
     flex: 1,
+  },
+  field: {
+    gap: 8,
   },
 });

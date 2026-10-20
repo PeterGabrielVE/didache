@@ -94,3 +94,30 @@ export function maskTime(text: string) {
 export function isValidTime(text: string) {
   return /^([01]\d|2[0-3]):[0-5]\d$/.test(text);
 }
+
+// Máscara para escribir fechas: '15032014' -> '15/03/2014'
+export function maskDate(text: string) {
+  const digits = text.replace(/\D/g, '').slice(0, 8);
+  return [digits.slice(0, 2), digits.slice(2, 4), digits.slice(4)].filter(Boolean).join('/');
+}
+
+// 'DD/MM/AAAA' -> 'YYYY-MM-DD', o null si no es una fecha real (p. ej. 31/02)
+export function parseDisplayDate(text: string) {
+  const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(text);
+  if (!match) return null;
+  const [, d, m, y] = match.map(Number);
+  const date = new Date(y, m - 1, d);
+  if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d) return null;
+  return toISODate(date);
+}
+
+// 'YYYY-MM-DD' -> 'DD/MM/AAAA'
+export function formatDisplayDate(iso: string) {
+  const [y, m, d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+// Edad que cumple (o cumplió) en el año de `on`
+export function ageTurning(birthDate: string, on = today()) {
+  return Number(on.slice(0, 4)) - Number(birthDate.slice(0, 4));
+}

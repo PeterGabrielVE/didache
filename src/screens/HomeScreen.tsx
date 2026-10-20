@@ -1,14 +1,14 @@
 import { useNavigation } from '@react-navigation/native';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import { ActivityCard, Card, Icon, StatCard, Text } from '../components';
+import { ActivityCard, BirthdaysCard, Card, Icon, StatCard, Text } from '../components';
 import { COLORS, SIZES } from '../constants/theme';
 import { useDashboardStats } from '../hooks/useDashboardStats';
 import { formatLongDate } from '../utils/date';
 
 export function HomeScreen() {
   const navigation = useNavigation();
-  const { stats, activities } = useDashboardStats();
+  const { stats, activities, birthdays } = useDashboardStats();
   const todayLabel = formatLongDate();
 
   return (
@@ -35,6 +35,8 @@ export function HomeScreen() {
         icon="checkmark-done"
         color="success"
       />
+
+      <BirthdaysCard participants={birthdays} />
 
       <Text variant="h4" style={styles.sectionTitle}>
         Actividades de este mes

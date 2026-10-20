@@ -8,6 +8,7 @@ type ParticipantRow = {
   last_name: string;
   phone: string | null;
   notes: string | null;
+  birth_date: string | null;
   active: number;
   created_at: string;
 };
@@ -19,6 +20,7 @@ function toParticipant(row: ParticipantRow): Participant {
     lastName: row.last_name,
     phone: row.phone,
     notes: row.notes,
+    birthDate: row.birth_date,
     active: row.active === 1,
     createdAt: row.created_at,
   };
@@ -45,11 +47,12 @@ export async function getParticipantById(db: SQLiteDatabase, id: number) {
 
 export async function createParticipant(db: SQLiteDatabase, data: NewParticipant) {
   const result = await db.runAsync(
-    'INSERT INTO participants (first_name, last_name, phone, notes) VALUES (?, ?, ?, ?)',
+    'INSERT INTO participants (first_name, last_name, phone, notes, birth_date) VALUES (?, ?, ?, ?, ?)',
     data.firstName.trim(),
     data.lastName.trim(),
     data.phone ?? null,
     data.notes ?? null,
+    data.birthDate ?? null,
   );
   return result.lastInsertRowId;
 }
@@ -61,15 +64,28 @@ export async function updateParticipant(
 ) {
   await db.runAsync(
     `UPDATE participants
-     SET first_name = ?, last_name = ?, phone = ?, notes = ?, active = COALESCE(?, active)
+     SET first_name = ?, last_name = ?, phone = ?, notes = ?, birth_date = ?,
+         active = COALESCE(?, active)
      WHERE id = ?`,
     data.firstName.trim(),
     data.lastName.trim(),
     data.phone ?? null,
     data.notes ?? null,
+    data.birthDate ?? null,
     data.active === undefined ? null : Number(data.active),
     id,
   );
+}
+
+// Participantes activos que cumplen años en el mes (1-12), ordenados por día.
+export async function getBirthdaysInMonth(db: SQLiteDatabase, month: number) {
+  const rows = await db.getAllAsync<ParticipantRow>(
+    `SELECT * FROM participants
+     WHERE active = 1 AND birth_date IS NOT NULL AND CAST(strftime('%m', birth_date) AS INTEGER) = ?
+     ORDER BY strftime('%d', birth_date)`,
+    month,
+  );
+  return rows.map(toParticipant);
 }
 
 // Borrado definitivo: también elimina su historial de asistencia (ON DELETE CASCADE).

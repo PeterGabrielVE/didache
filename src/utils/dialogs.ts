@@ -29,3 +29,12 @@ export function confirm({ title, message, confirmLabel, destructive }: Options) 
     );
   });
 }
+
+// Aviso informativo con un solo botón
+export function notify(title: string, message?: string) {
+  if (Platform.OS === 'web') {
+    window.alert(message ? `${title}\n\n${message}` : title);
+    return;
+  }
+  Alert.alert(title, message);
+}

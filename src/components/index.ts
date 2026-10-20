@@ -3,6 +3,7 @@ export { ArrowButton } from './ArrowButton';
 export { AttendanceToggle } from './AttendanceToggle';
 export { Avatar } from './Avatar';
 export { Badge } from './Badge';
+export { BirthdaysCard } from './BirthdaysCard';
 export { Button, type ButtonProps } from './Button';
 export { Card } from './Card';
 export { DateField } from './DateField';
@@ -14,6 +15,7 @@ export { Icon, type ArgonIconName, type IconProps, type IoniconName } from './Ic
 export { Input, type InputProps } from './Input';
 export { MonthCalendar } from './MonthCalendar';
 export { MonthNavigator } from './MonthNavigator';
+export { OptionChips } from './OptionChips';
 export { ProgressBar } from './ProgressBar';
 export { SegmentedControl } from './SegmentedControl';
 export { StatCard } from './StatCard';

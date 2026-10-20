@@ -1,16 +1,17 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
 
-import { activitiesRepo, statsRepo, useDatabase } from '../database';
-import type { Activity } from '../types/models';
+import { activitiesRepo, participantsRepo, statsRepo, useDatabase } from '../database';
+import type { Activity, Participant } from '../types/models';
 import { monthRange } from '../utils/date';
 import type { DashboardStats } from '../database/repositories/stats';
 
-// Estadísticas y actividades del mes; se recargan cada vez que la pantalla gana foco.
+// Estadísticas, actividades y cumpleaños del mes; se recargan cada vez que la pantalla gana foco.
 export function useDashboardStats() {
   const db = useDatabase();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [activities, setActivities] = useState<Activity[]>([]);
+  const [birthdays, setBirthdays] = useState<Participant[]>([]);
 
   useFocusEffect(
     useCallback(() => {
@@ -19,10 +20,12 @@ export function useDashboardStats() {
       Promise.all([
         statsRepo.getDashboardStats(db, from, to),
         activitiesRepo.getActivitiesInRange(db, from, to),
-      ]).then(([nextStats, nextActivities]) => {
+        participantsRepo.getBirthdaysInMonth(db, new Date().getMonth() + 1),
+      ]).then(([nextStats, nextActivities, nextBirthdays]) => {
         if (cancelled) return;
         setStats(nextStats);
         setActivities(nextActivities);
+        setBirthdays(nextBirthdays);
       });
       return () => {
         cancelled = true;
@@ -30,5 +33,5 @@ export function useDashboardStats() {
     }, [db]),
   );
 
-  return { stats, activities };
+  return { stats, activities, birthdays };
 }

@@ -5,10 +5,11 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-na
 import { Button, Card, Input, Text } from '../components';
 import { COLORS, SIZES } from '../constants/theme';
 import { participantsRepo, useDatabase } from '../database';
+import { formatDisplayDate, maskDate, parseDisplayDate, today } from '../utils/date';
 
 type Props = StaticScreenProps<{ participantId?: number } | undefined>;
 
-type Errors = Partial<Record<'firstName' | 'lastName', string>>;
+type Errors = Partial<Record<'firstName' | 'lastName' | 'birthDate', string>>;
 
 // Alta y edición de participante (sin participantId = alta)
 export function ParticipantFormScreen({ route }: Props) {
@@ -20,6 +21,8 @@ export function ParticipantFormScreen({ route }: Props) {
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
   const [notes, setNotes] = useState('');
+  // Tal como se escribe: 'DD/MM/AAAA'
+  const [birthDate, setBirthDate] = useState('');
   const [errors, setErrors] = useState<Errors>({});
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -32,6 +35,7 @@ export function ParticipantFormScreen({ route }: Props) {
       setLastName(p.lastName);
       setPhone(p.phone ?? '');
       setNotes(p.notes ?? '');
+      setBirthDate(p.birthDate ? formatDisplayDate(p.birthDate) : '');
     });
   }, [db, participantId]);
 
@@ -39,6 +43,11 @@ export function ParticipantFormScreen({ route }: Props) {
     const next: Errors = {};
     if (!firstName.trim()) next.firstName = 'Ingresá el nombre';
     if (!lastName.trim()) next.lastName = 'Ingresá el apellido';
+    if (birthDate) {
+      const iso = parseDisplayDate(birthDate);
+      if (!iso) next.birthDate = 'Fecha inválida. Formato DD/MM/AAAA';
+      else if (iso > today()) next.birthDate = 'No puede ser una fecha futura';
+    }
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -52,6 +61,7 @@ export function ParticipantFormScreen({ route }: Props) {
       lastName,
       phone: phone.trim() || null,
       notes: notes.trim() || null,
+      birthDate: birthDate ? parseDisplayDate(birthDate) : null,
     };
     try {
       if (participantId) {
@@ -95,6 +105,17 @@ export function ParticipantFormScreen({ route }: Props) {
             shadowless
           />
           <Input
+            label="Fecha de nacimiento"
+            placeholder="DD/MM/AAAA"
+            value={birthDate}
+            onChangeText={(text) => setBirthDate(maskDate(text))}
+            error={!!errors.birthDate}
+            helper={errors.birthDate ?? 'Para recordar su cumpleaños'}
+            keyboardType="number-pad"
+            maxLength={10}
+            shadowless
+          />
+          <Input
             label="Teléfono"
             placeholder="Del participante o de su familia"
             value={phone}
@@ -128,7 +149,9 @@ export function ParticipantFormScreen({ route }: Props) {
           <Button
             transparent
             // Si se llegó desde el historial vuelve a él; si no, reemplaza el formulario
-            onPress={() => navigation.dispatch(StackActions.popTo('ParticipantHistory', { participantId }))}
+            onPress={() =>
+              navigation.dispatch(StackActions.popTo('ParticipantHistory', { participantId }))
+            }
           >
             Ver historial de asistencia
           </Button>

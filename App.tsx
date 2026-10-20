@@ -3,6 +3,9 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { DatabaseProvider } from './src/database';
 import { Navigation } from './src/navigation';
+import { setupNotifications } from './src/services/reminders';
+
+setupNotifications();
 
 export default function App() {
   return (

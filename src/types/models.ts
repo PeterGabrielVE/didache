@@ -7,12 +7,14 @@ export type Participant = {
   lastName: string;
   phone: string | null;
   notes: string | null;
+  // 'YYYY-MM-DD'
+  birthDate: string | null;
   active: boolean;
   createdAt: string;
 };
 
 export type NewParticipant = Pick<Participant, 'firstName' | 'lastName'> &
-  Partial<Pick<Participant, 'phone' | 'notes'>>;
+  Partial<Pick<Participant, 'phone' | 'notes' | 'birthDate'>>;
 
 export type AttendanceStatus = 'present' | 'absent';
 
@@ -31,8 +33,10 @@ export type Activity = {
   startTime: string | null;
   endTime: string | null;
   location: string | null;
+  // Minutos antes del inicio (sin hora de inicio se toma las 9:00); null = sin recordatorio
+  reminderMinutes: number | null;
   createdAt: string;
 };
 
 export type NewActivity = Pick<Activity, 'title' | 'date'> &
-  Partial<Pick<Activity, 'description' | 'startTime' | 'endTime' | 'location'>>;
+  Partial<Pick<Activity, 'description' | 'startTime' | 'endTime' | 'location' | 'reminderMinutes'>>;
