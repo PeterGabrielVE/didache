@@ -36,7 +36,7 @@ export function AttendanceReportScreen() {
 
   const header = (
     <View style={styles.header}>
-      <MonthNavigator month={month} onChange={setMonth} />
+      <MonthNavigator month={month} onChange={setMonth} maxMonth={today()} />
       <View style={styles.statsRow}>
         <StatCard label="Encuentros" value={report?.sessions.length ?? '–'} icon="calendar" color="info" />
         <StatCard

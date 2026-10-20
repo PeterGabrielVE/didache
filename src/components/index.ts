@@ -1,3 +1,4 @@
+export { ActivityCard } from './ActivityCard';
 export { ArrowButton } from './ArrowButton';
 export { AttendanceToggle } from './AttendanceToggle';
 export { Avatar } from './Avatar';
@@ -10,6 +11,7 @@ export { FloatingButton } from './FloatingButton';
 export { HeaderButton } from './HeaderButton';
 export { Icon, type ArgonIconName, type IconProps, type IoniconName } from './Icon';
 export { Input, type InputProps } from './Input';
+export { MonthCalendar } from './MonthCalendar';
 export { MonthNavigator } from './MonthNavigator';
 export { ProgressBar } from './ProgressBar';
 export { SegmentedControl } from './SegmentedControl';

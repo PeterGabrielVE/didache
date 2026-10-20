@@ -5,7 +5,8 @@ import { HeaderButton, Icon, type IoniconName } from '../components';
 import { COLORS } from '../constants/theme';
 import { HomeScreen } from '../screens/HomeScreen';
 import { AttendanceScreen } from '../screens/AttendanceScreen';
-import { AgendaScreen, ResourcesScreen } from '../screens/PlaceholderScreens';
+import { AgendaScreen } from '../screens/AgendaScreen';
+import { ResourcesScreen } from '../screens/PlaceholderScreens';
 import { headerOptions } from './headerOptions';
 
 // Ícono relleno cuando la tab está activa, contorno cuando no

@@ -1,9 +1,9 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import { Badge, Card, Icon, StatCard, Text } from '../components';
+import { ActivityCard, Card, Icon, StatCard, Text } from '../components';
 import { COLORS, SIZES } from '../constants/theme';
 import { useDashboardStats } from '../hooks/useDashboardStats';
-import { formatLongDate, formatShortDate } from '../utils/date';
+import { formatLongDate } from '../utils/date';
 
 export function HomeScreen() {
   const { stats, activities } = useDashboardStats();
@@ -45,26 +45,7 @@ export function HomeScreen() {
           </Text>
         </Card>
       ) : (
-        activities.map((activity) => (
-          <Card key={activity.id} style={styles.activity}>
-            <View style={styles.activityHeader}>
-              <Badge label={formatShortDate(activity.date)} color="primary" />
-              {activity.startTime ? (
-                <Text variant="caption" muted>
-                  {activity.startTime}
-                </Text>
-              ) : null}
-            </View>
-            <Text variant="body" bold color={COLORS.HEADING}>
-              {activity.title}
-            </Text>
-            {activity.location ? (
-              <Text variant="small" muted>
-                {activity.location}
-              </Text>
-            ) : null}
-          </Card>
-        ))
+        activities.map((activity) => <ActivityCard key={activity.id} activity={activity} />)
       )}
     </ScrollView>
   );
@@ -96,13 +77,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     paddingVertical: SIZES.BASE * 2,
-  },
-  activity: {
-    gap: 6,
-  },
-  activityHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
   },
 });

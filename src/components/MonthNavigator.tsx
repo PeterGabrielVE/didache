@@ -9,12 +9,15 @@ type Props = {
   // Cualquier día del mes; se muestra solo mes y año
   month: string;
   onChange: (month: string) => void;
+  // Último mes permitido (cualquier día de ese mes); sin límite si no se indica
+  maxMonth?: string;
 };
 
-// Selector de mes con flechas: ‹ Octubre 2026 ›. No permite pasar del mes actual.
-export function MonthNavigator({ month, onChange }: Props) {
+// Selector de mes con flechas: ‹ Octubre 2026 ›
+export function MonthNavigator({ month, onChange, maxMonth }: Props) {
   const current = addMonths(today(), 0);
   const value = addMonths(month, 0);
+  const canGoNext = !maxMonth || value < addMonths(maxMonth, 0);
 
   return (
     <View style={styles.container}>
@@ -30,7 +33,7 @@ export function MonthNavigator({ month, onChange }: Props) {
       <ArrowButton
         icon="chevron-forward"
         label="Mes siguiente"
-        disabled={value >= current}
+        disabled={!canGoNext}
         onPress={() => onChange(addMonths(value, 1))}
       />
     </View>

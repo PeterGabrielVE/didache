@@ -54,3 +54,27 @@ export function formatMonth(iso: string) {
   return text.charAt(0).toUpperCase() + text.slice(1).replace(' de ', ' ');
 }
 
+
+// Semanas del mes para una grilla de calendario que empieza el lunes.
+// Los huecos antes del día 1 y después del último día son null.
+export function calendarWeeks(month: string) {
+  const first = parseISODate(addMonths(month, 0));
+  const daysInMonth = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+  const offset = (first.getDay() + 6) % 7;
+
+  const cells: (string | null)[] = Array(offset).fill(null);
+  for (let day = 1; day <= daysInMonth; day++) {
+    cells.push(toISODate(new Date(first.getFullYear(), first.getMonth(), day)));
+  }
+  while (cells.length % 7 !== 0) cells.push(null);
+
+  const weeks: (string | null)[][] = [];
+  for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
+  return weeks;
+}
+
+// '10:00' / '10:00 – 12:00' / null
+export function formatTimeRange(start: string | null, end: string | null) {
+  if (!start) return null;
+  return end ? `${start} – ${end}` : start;
+}

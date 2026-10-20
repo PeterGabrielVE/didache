@@ -3,19 +3,7 @@ import { ScrollView, StyleSheet } from 'react-native';
 import { EmptyState } from '../components';
 import { COLORS, SIZES } from '../constants/theme';
 
-// Tabs de sprints futuros: muestran qué va a haber ahí.
-
-export function AgendaScreen() {
-  return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      <EmptyState
-        icon={{ family: 'argon', name: 'calendar-date' }}
-        title="Agenda"
-        description="Acá vas a ver el calendario de encuentros y actividades del grupo."
-      />
-    </ScrollView>
-  );
-}
+// Tab de un sprint futuro: muestra qué va a haber ahí.
 
 export function ResourcesScreen() {
   return (
